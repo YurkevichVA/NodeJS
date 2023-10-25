@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Cat to the Database</title>
+</head>
+<body>
+    <h1>Add a New Cat to the Database</h1>
+
+    <label for="catBreed">Cat Breed:</label>
+    <input type="text" id="catBreed" required>
+    <br>
+
+    <label for="catPhoto">Link to Cat Photo:</label>
+    <input type="url" id="catPhoto" required>
+    <br>
+
+    <label for="catAge">Cat Age:</label>
+    <input type="number" id="catAge" required>
+    <br>
+
+    <button id="addCatButton">Add Cat</button>
+
+    <div id="successMessage" style="display: none">
+        <img width="150px" src="https://koshka.top/uploads/posts/2021-12/1640340793_5-koshka-top-p-koti-s-paltsami-vverkh-5.jpg" />
+    </div>
+
+    <hr/>
+
+    <!--<button id="getAllCatsButton">Get All Cats</button>-->
+
+    <label for="filterBreed">Filter by Breed:</label>
+    <input type="text" id="filterBreed" placeholder="Enter breed">
+    <label for="filterAge">Filter by Age:</label>
+    <input type="number" id="filterAge" placeholder="Enter age">
+    <label for="resultCount">Result Count:</label>
+    <input type="number" id="resultCount" placeholder="Enter count">
+
+    <table id="catTable" style="display: none">
+        <thead>
+            <tr>
+                <th>Breed</th>
+                <th>Photo</th>
+                <th id="ageHeader" style="cursor: pointer">Age</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <hr/>
+
+    <label for="deleteCatId">Cat ID to Delete:</label>
+    <input type="number" id="deleteCatId">
+    <button id="deleteCatButton">Delete Cat</button>
+    
+    <script>
+        let ageSortDirection = 'asc';
+        const filterBreedInput = document.getElementById('filterBreed');
+        const filterAgeInput = document.getElementById('filterAge');
+        const resultCountInput = document.getElementById('resultCount');
+
+        const refreshTable = () => {
+            const params = new URLSearchParams();
+            if (filterBreedInput.value) {
+                params.append('breed', filterBreedInput.value);
+            }
+            if (filterAgeInput.value) {
+                params.append('age', filterAgeInput.value);
+            }
+            if (resultCountInput.value) {
+                params.append('count', resultCountInput.value);
+            }
+            params.append('ageSortDirection', ageSortDirection);
+
+            fetch('/get-all-cats?' + params.toString())
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch cat data');
+                }
+            })
+            .then(data => {
+                catTable.querySelector('tbody').innerHTML = '';
+
+                data.forEach(cat => {
+                    const row = catTable.querySelector('tbody').insertRow();
+                    row.insertCell(0).textContent = cat.breed;
+                    row.insertCell(1).innerHTML = `<img src="${cat.image}" alt="Cat Image" style="max-width: 100px">`;
+                    row.insertCell(2).textContent = cat.age;
+                });
+            catTable.style.display = 'table';
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+        });
+    };
+    
+        filterBreedInput.addEventListener('change', refreshTable);
+        filterAgeInput.addEventListener('change', refreshTable);
+        resultCountInput.addEventListener('change', refreshTable);
+
+        const ageHeader = document.getElementById('ageHeader');
+        
+
+        ageHeader.addEventListener('click', () => {
+            
+            ageSortDirection = ageSortDirection === 'asc' ? 'desc' : 'asc';
+
+            refreshTable();
+        });
+
+        const catBreedInput = document.getElementById('catBreed');
+        const catPhotoInput = document.getElementById('catPhoto');
+        const catAgeInput = document.getElementById('catAge');
+
+        const addCatButton = document.getElementById('addCatButton');
+        addCatButton.addEventListener('click', () => {
+
+            const catBreed = document.getElementById('catBreed').value;
+            const catPhoto = document.getElementById('catPhoto').value;
+            const catAge = document.getElementById('catAge').value;
+
+            const catData = {
+                catBreed,
+                catPhoto,
+                catAge
+            };
+
+            fetch('/add-cat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(catData)
+            })
+            .then(response => {
+                if (response.status === 201) {
+                    successMessage.style.display = 'block';
+                    catBreedInput.value = '';
+                    catPhotoInput.value = '';
+                    catAgeInput.value = '';
+
+                    refreshTable();
+
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 2000);
+                } else {
+                    
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+            });
+        });
+
+        const getAllCatsButton = document.getElementById('getAllCatsButton');
+        const catTable = document.getElementById('catTable');
+
+        
+
+        getAllCatsButton.addEventListener('click', () => {
+            // Send a GET request to the server to fetch all cat data
+            fetch('/get-all-cats')
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch cat data');
+                }
+            })
+            .then(data => {
+                // Clear any existing table data
+                catTable.querySelector('tbody').innerHTML = '';
+
+                // Populate the table with cat data
+                data.forEach(cat => {
+                    const row = catTable.querySelector('tbody').insertRow();
+                    row.insertCell(0).textContent = cat.breed;
+                    row.insertCell(1).innerHTML = `<img src="${cat.image}" alt="Cat Image" style="max-width: 100px">`;
+                    row.insertCell(2).textContent = cat.age;
+                });
+
+                // Display the table
+                catTable.style.display = 'table';
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+                // You can display an error message here
+            });
+        });
+
+        const deleteCatButton = document.getElementById('deleteCatButton');
+        const deleteCatIdInput = document.getElementById('deleteCatId');
+
+        deleteCatButton.addEventListener('click', () => {
+            const catIdToDelete = parseInt(deleteCatIdInput.value, 10);
+
+            // Send a DELETE request to the server to delete the cat with the specified ID
+            fetch(`/delete-cat/${catIdToDelete}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    refreshTable();
+                } else {
+                    // Error occurred or cat with the specified ID was not found
+                    // You can display an error message here
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+                // You can display an error message here
+            });
+        });
+    </script>
+</body>
+</html>
