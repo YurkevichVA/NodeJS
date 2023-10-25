@@ -1,0 +1,87 @@
+{{#if bool}}
+    ok
+    {{else}}
+    no
+{{/if}}
+
+<hr/>
+
+{{#if 0 includeZero=true}}
+    ok
+    {{else}}
+    no
+{{/if}}
+
+<hr/>
+
+{{#if (isEven num)}}
+    ok
+    {{else}}
+    no
+{{/if}}
+
+<hr/>
+
+{{#unless (isEven num)}}
+unless ok
+{{else}}
+unless no
+{{/unless}}
+
+<hr/>
+
+{{#each arr as |num|}}
+    <div>{{@index}} {{num}}</div>
+    {{else}}
+    <p>arr is empty</p>
+{{/each}}
+
+<hr/>
+
+{{#each arr2d as |nestedArr|}}
+    {{#each nestedArr as |num|}}
+    <div>{{@../index}} {{@index}} {{num}}</div>
+    {{/each}}
+{{/each}}
+
+<hr/>
+
+{{arr.[0]}}
+
+<hr/>
+
+{{#with cat}}
+    {{callsign}} - {{name}}
+{{/with}}
+
+<hr/>
+
+{{cat.callsign}} - {{cat.name}}
+
+<hr/>
+
+{{@log cat.callsign}}
+{{@log 123}}
+
+<hr/>
+
+{{#each arr}}
+    ...
+    {{@log @this}}
+{{/each}}
+
+<hr/>
+
+{{@root.arr}}
+
+<hr/>
+
+{{#each arr}}
+    {{#if @first}} 
+        FIRST
+    {{/if}}
+    {{@index}}
+    {{#if @last}}
+        LAST
+    {{/if}}
+{{/each}}

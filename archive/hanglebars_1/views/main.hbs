@@ -1,0 +1,20 @@
+<h2>Fav Films</h2>
+<ul>
+    <li>Dune</li>
+    <li>Bladerunner 2049</li>
+    <li>Люксембург, Люксембург...</li>
+    <li>Тіні забутих предків</li>
+</ul>
+
+{{loh}}
+
+{{> cat}}
+{{> dog}}
+
+{{#if listExists}}
+    <ul>
+        {{#each scoreData}}
+            <li>{{this.name}}  {{this.score}}</li>
+        {{/each}}
+    </ul>
+{{/if}}

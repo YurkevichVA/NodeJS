@@ -1,0 +1,25 @@
+
+<p>Вам є 20 років?</p>
+<button id="yesBtn">так</button>
+<button onclick="no">ні</button>
+
+{{!-- {{#if (confirmation)}}
+    <img src="../public/{{this}}"/>
+{{/if}} --}}
+{{#unless (confirmation)}}
+    <img id="cryingBabyImg" />
+{{/unless}}
+
+<script>
+    let yesBtn = document.getElementById("yesBtn");
+    let cryingBabyImg = document.getElementById("cryingBabyImg")
+
+    yesBtn.onclick = () => {
+        {{confirmation}} = true;
+        fetch("/images", {method: "POST"})
+                    .then((res) => {
+                        console.log(res);
+                        cryingBabyImg.src = res;
+                    });
+    }
+</script>

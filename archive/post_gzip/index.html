@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="numberInput" type="text"/>
+    <button id="receiveBtn" disabled> receive </button>
+    <img id="gif" width="100" />
+    <script>
+            let input = document.getElementById("numberInput");
+            let btn = document.getElementById("receiveBtn");
+            let gif = document.getElementById("gif");
+
+            input.onchange = (e) => {
+                console.log(e.target.value, "onchange");
+                if  ( input.value === "1" 
+                    || input.value === "2"
+                    || input.value === "3"
+                    || input.value === "4"
+                    || input.value === "5") {
+                    btn.disabled = false;
+                }
+                else {
+                    btn.disabled = true;
+                }
+            }
+
+            btn.onclick = (e) => {
+                
+                console.log(input.value);
+                fetch("/", {method: "POST", body: input.value})
+                    .then((res) => {
+                        gif.src = "/gif" + input.value;
+                    });
+            }
+    </script>
+</body>
+</html>

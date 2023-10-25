@@ -1,0 +1,9 @@
+CREATE DATABASE cats_app;
+USE cats_app;
+
+CREATE TABLE cats (
+  id integer PRIMARY KEY AUTO_INCREMENT,
+  breed VARCHAR (255) NOT NULL,
+  image TEXT NOT NULL,
+  age VARCHAR (255) NOT NULL
+);
